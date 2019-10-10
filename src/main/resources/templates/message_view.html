@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Messages from @[[${user.username}]]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    Username: @[[${user.username}]] <br />
+    [[${user.name.first}]] [[${user.name.middle}]] [[${user.name.last}]] <br />
+
+    <p th:each="message :${MessageCollection}">
+        [[${message.postedDate}]] : [[${message.content}]]
+        <br />
+    </p>
+    <p><span th:replace="f/base::message_new"></span></p>
+</div>
+</body>
+</html>
