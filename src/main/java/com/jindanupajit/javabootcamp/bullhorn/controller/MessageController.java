@@ -1,5 +1,7 @@
 package com.jindanupajit.javabootcamp.bullhorn.controller;
 
+import com.cloudinary.utils.ObjectUtils;
+import com.jindanupajit.javabootcamp.bullhorn.component.CloudinaryUploader;
 import com.jindanupajit.javabootcamp.bullhorn.entity.Message;
 import com.jindanupajit.javabootcamp.bullhorn.entity.PeopleName;
 import com.jindanupajit.javabootcamp.bullhorn.entity.User;
@@ -10,16 +12,23 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class MessageController {
     @PersistenceContext
     EntityManager manager;
+
+    @Autowired
+    CloudinaryUploader cloudinaryUploader;
 
     @Autowired
     MessageCrudRepository messageCrudRepository;
@@ -40,22 +49,57 @@ public class MessageController {
     }
 
     @PostMapping("/message/process")
-    public String FromProcessor (@ModelAttribute Message message, Model model) {
+    public String FromProcessor (@ModelAttribute Message message, @RequestParam("file") MultipartFile file, Model model) {
 
-        // todo
+        if (!file.isEmpty()) {
+            try {
+                Map uploadResult = cloudinaryUploader.upload(
+                        file
+                            .getBytes()
+                            ,ObjectUtils
+                                .asMap("resourcetype", "auto"));
+                message.setImageUrl(uploadResult.get("url").toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+                // fallback
+                message.setImageUrl(null);
+            }
+        }
+        else {
+            message.setImageUrl(null);
+        }
         message.setPostedDate(new Date((new java.util.Date()).getTime()));
         message.setUser(getUserByUsername("jindanupajit"));
         messageCrudRepository.save(message);
-        return "redirect:/message/view/"+message.getUser().getUsername();
+        return "redirect:/message/view";
+
+    }
+
+    @GetMapping("/message/view")
+    public String ViewUserMessages(Model model) {
+
+
+            model.addAttribute("whom", "all");
+            model.addAttribute("MessageCollection",messageCrudRepository.findAll());
+
+        return "message_view";
 
     }
 
     @GetMapping("/message/view/{username}")
-    public String ViewUserMessages(@PathVariable("username") String username, Model model) {
-        User user =   getUserByUsername(username);
-        model.addAttribute("user", user);
-        model.addAttribute("MessageCollection", getMessageByUser(user));
+    public String ViewUserMessages(@PathVariable("username") Optional<String> username, Model model) {
+
+        if (username.isPresent()) {
+            User user =   getUserByUsername(username.get());
+            model.addAttribute("whom", user.getUsername());
+            model.addAttribute("MessageCollection", getMessageByUser(user));
+        }
+        else {
+            model.addAttribute("whom", "all");
+            model.addAttribute("MessageCollection",messageCrudRepository.findAll());
+        }
         return "message_view";
+
     }
 
     private User getUserByUsername(String username) {

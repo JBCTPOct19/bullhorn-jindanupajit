@@ -23,7 +23,7 @@ public class DataLoader implements CommandLineRunner {
 
         messageRepository.save (
             new Message(
-                    "Hello, Bullhorn!",
+                    "Hello, Batman!",
                     (new Date((new java.util.Date()).getTime())),
                     (new User(
                             "jindanupajit",
@@ -33,6 +33,20 @@ public class DataLoader implements CommandLineRunner {
                         )
                     )
             )
+        );
+
+        messageRepository.save (
+                new Message(
+                        "Hello, Krissada!",
+                        (new Date((new java.util.Date()).getTime())),
+                        (new User(
+                                "batman",
+                                ( (new BCryptPasswordEncoder())
+                                        .encode("password") ),
+                                new PeopleName("Bruce", null, "Wayne")
+                        )
+                        )
+                )
         );
 
 

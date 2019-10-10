@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Messages from @[[${user.username}]]</title>
+    <title>Messages from @[[${whom}]]</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -11,13 +11,14 @@
 </head>
 <body>
 <div class="container">
-    <h2>@[[${user.username}]] <br /></h2>
+    <h2>@[[${whom}]] <br /></h2>
 
     <div class="border rounded mx-auto" style="display:block;margin-bottom: 5px;" th:each="message :${MessageCollection}">
         <div class="card" style="width: 100%; " >
+            <img src="" class="card-img-top" th:if="${message.imageUrl} != null"/>
             <div class="card-body">
                 <div class="card-title">
-                    <b>[[${user.name.first}]] [[${user.name.middle}]] [[${user.name.last}]]</b>
+                    <b>[[${message.user.name.first}]] [[${message.user.name.middle}]] [[${message.user.name.last}]]</b>
                 </div><div class="card-text">
                 <p>@[[${message.user.username}]] on [[${message.postedDate}]]</p>
                     [[${message.content}]]

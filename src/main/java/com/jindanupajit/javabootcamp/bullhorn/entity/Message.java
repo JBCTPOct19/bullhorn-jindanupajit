@@ -16,6 +16,8 @@ public class Message {
     @Size(max = 1024)
     private String content;
 
+    @Column(length = 1024)
+    private String imageUrl;
 
     private Date postedDate;
 
@@ -30,10 +32,15 @@ public class Message {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Message(@Size(max = 1024) String content, Date postedDate, User user) {
+    public Message(@Size(max = 1024) String content, String imageUrl, Date postedDate, User user) {
         this.content = content;
+        this.imageUrl = imageUrl;
         this.postedDate = postedDate;
         this.user = user;
+    }
+
+    public Message(@Size(max = 1024) String content, Date postedDate, User user) {
+        this(content, null, postedDate, user);
     }
 
     public Message() {
@@ -69,5 +76,13 @@ public class Message {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
