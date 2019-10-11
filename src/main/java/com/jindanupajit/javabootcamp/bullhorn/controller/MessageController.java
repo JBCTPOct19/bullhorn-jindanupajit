@@ -4,9 +4,11 @@ import com.cloudinary.utils.ObjectUtils;
 import com.jindanupajit.javabootcamp.bullhorn.component.CloudinaryUploader;
 import com.jindanupajit.javabootcamp.bullhorn.entity.Message;
 import com.jindanupajit.javabootcamp.bullhorn.entity.PeopleName;
+import com.jindanupajit.javabootcamp.bullhorn.entity.SpringUser;
 import com.jindanupajit.javabootcamp.bullhorn.entity.User;
 import com.jindanupajit.javabootcamp.bullhorn.repository.MessageCrudRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.security.Principal;
 
 @Controller
 public class MessageController {
@@ -32,15 +35,23 @@ public class MessageController {
     @Autowired
     MessageCrudRepository messageCrudRepository;
 
-    @GetMapping(value = {"/message/new/form", "/add"} )
-    public String Form (Model model) {
+    public SpringUser init(Model model, Principal principal) {
+        SpringUser springUser = (SpringUser) ((Authentication) principal).getPrincipal();
 
+        model.addAttribute("spring_user", springUser);
+
+        return springUser;
+    }
+
+    @GetMapping(value = {"/message/new/form", "/add"} )
+    public String Form (Model model, Principal principal) {
+        SpringUser springUser = init(model, principal);
         model.addAttribute("message",
                 new Message(
                         "",
                         (new Timestamp((new java.util.Date()).getTime())),
                         // todo
-                        getUserByUsername("jindanupajit")
+                        getUserByUsername(springUser.getUsername())
                 )
         );
 
@@ -48,8 +59,8 @@ public class MessageController {
     }
 
     @PostMapping("/message/process")
-    public String FromProcessor (@ModelAttribute Message message, @RequestParam("file") MultipartFile file, Model model) {
-
+    public String FromProcessor (@ModelAttribute Message message, @RequestParam("file") MultipartFile file, Model model, Principal principal) {
+        SpringUser springUser = init(model, principal);
         if (!file.isEmpty()) {
             try {
                 Map uploadResult = cloudinaryUploader.upload(
@@ -69,26 +80,26 @@ public class MessageController {
             message.setImageUrl(null);
         }
         message.setPostedDate(new Timestamp((new java.util.Date()).getTime()));
-        message.setUser(getUserByUsername("jindanupajit"));
+        message.setUser(getUserByUsername(springUser.getUsername()));
         messageCrudRepository.save(message);
         return "redirect:/message/view";
 
     }
 
     @GetMapping("/message/view")
-    public String ViewUserMessages(Model model) {
+    public String ViewUserMessages(Model model, Principal principal) {
 
-
-            model.addAttribute("whom", "all");
-            model.addAttribute("MessageCollection",messageCrudRepository.findAll());
+        init(model, principal);
+        model.addAttribute("whom", "all");
+        model.addAttribute("MessageCollection",messageCrudRepository.findAll());
 
         return "message_view";
 
     }
 
     @GetMapping("/message/view/{username}")
-    public String ViewUserMessages(@PathVariable("username") Optional<String> username, Model model) {
-
+    public String ViewUserMessages(@PathVariable("username") Optional<String> username, Model model, Principal principal) {
+        init(model, principal);
         if (username.isPresent()) {
             User user =   getUserByUsername(username.get());
             model.addAttribute("whom", user.getUsername());

@@ -4,6 +4,7 @@ import com.jindanupajit.javabootcamp.bullhorn.entity.Message;
 import com.jindanupajit.javabootcamp.bullhorn.entity.PeopleName;
 import com.jindanupajit.javabootcamp.bullhorn.entity.User;
 import com.jindanupajit.javabootcamp.bullhorn.repository.MessageCrudRepository;
+import com.jindanupajit.javabootcamp.bullhorn.repository.UserCrudRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,6 +19,9 @@ public class DataLoader implements CommandLineRunner {
 
     @Autowired
     MessageCrudRepository messageRepository;
+
+    @Autowired
+    UserCrudRepository userRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -50,6 +54,23 @@ public class DataLoader implements CommandLineRunner {
                         )
                 )
         );
+
+        userRepository.save (new User(
+                        "john",
+                        ( (new BCryptPasswordEncoder())
+                                .encode("password") ),
+                        new PeopleName("John", "Spring", "Boot")
+                )
+        );
+
+        userRepository.save (new User(
+                        "jane",
+                        ( (new BCryptPasswordEncoder())
+                                .encode("password") ),
+                        new PeopleName("Jane", "Thyme", "Leaf")
+                )
+        );
+
 
 
     }

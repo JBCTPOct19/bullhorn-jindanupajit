@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:include="f/base::head">
     <meta charset="UTF-8">
     <title>Enter A Message</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,23 +8,40 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 </head>
 <body>
+<nav th:replace="f/base::navbar"></nav>
+<div id="spacer" class="spacer"></div>
 <div class="container">
+    <div class="border rounded mx-auto" style="display:block;padding:1ex;width:100%; background: #FFFFFF;">
     <form class="md-form" method="POST" th:action="@{/message/process}" th:object="${message}" enctype="multipart/form-data">
         <div class="form-group">
-            <label><span style="color:darkred">@</span>[[${message.user.username}]]:</label>
+            <label><span style="color:darkred;font-size: larger">@</span>[[${message.user.username}]]:</label>
             <input type="text" class="form-control" id="message" th:field="*{content}">
         </div>
-        <div class="file-field">
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+            </div>
+            <div class="custom-file">
+                <input type="file" name="file" class="custom-file-input" id="inputGroupFile01"
+                       aria-describedby="inputGroupFileAddon01" tyle="font-size: small;">
+                <label class="custom-file-label" for="inputGroupFile01">Choose an image file</label>
+            </div>
+        </div>
+
+        <!-- div class="file-field">
             <div class="btn btn-primary btn-sm float-left">
                 <span>Choose file</span>
                 <input type="file" name="file">
             </div>
-            <div class="file-path-wrapper">
+            <div class="file-path-wrapper" style="font-size: small;">
                 <input class="file-path validate" type="text" placeholder="Upload image">
             </div>
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-    </form>
+        </div -->
+        <br />
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form></div>
 </div>
+<script th:replace="f/base::runtime_script"></script>
 </body>
 </html>
