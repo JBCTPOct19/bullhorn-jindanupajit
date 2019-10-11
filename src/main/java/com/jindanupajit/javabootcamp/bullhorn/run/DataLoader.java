@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 
 @Component
@@ -24,7 +25,7 @@ public class DataLoader implements CommandLineRunner {
         messageRepository.save (
             new Message(
                     "Hello, Batman!",
-                    (new Date((new java.util.Date()).getTime())),
+                    (new Timestamp((new java.util.Date()).getTime())),
                     (new User(
                             "jindanupajit",
                             ( (new BCryptPasswordEncoder())
@@ -38,12 +39,13 @@ public class DataLoader implements CommandLineRunner {
         messageRepository.save (
                 new Message(
                         "Hello, Krissada!",
-                        (new Date((new java.util.Date()).getTime())),
+                        "https://res.cloudinary.com/jindanupajit/image/upload/v1570754276/nd4ym7crkctpitww49xw.png",
+                        (new Timestamp((new java.util.Date()).getTime())),
                         (new User(
                                 "batman",
                                 ( (new BCryptPasswordEncoder())
                                         .encode("password") ),
-                                new PeopleName("Bruce", null, "Wayne")
+                                new PeopleName("Bruce", "Thomas", "Wayne")
                         )
                         )
                 )

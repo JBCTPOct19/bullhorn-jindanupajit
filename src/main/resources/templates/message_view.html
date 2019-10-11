@@ -8,25 +8,75 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <style type="text/css">
+        body { background: #8f8f8f !important; }
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 500px;
+            }
+        }
+
+        .sticky {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        #content {
+            z-index: 1;
+        }
+
+    </style>
 </head>
 <body>
-<div class="container">
-    <h2>@[[${whom}]] <br /></h2>
+<nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-light sticky">
+    <h2 class="mr-auto">@[[${whom}]]</h2> <span class="my-2 my-lg-0" th:replace="f/base::message_new"><a class="btn btn-primary">Place Holder</a></span>
+</nav>
+<div id="spacer" class="spacer"></div>
+<div id="content" class="container">
 
+<br />
     <div class="border rounded mx-auto" style="display:block;margin-bottom: 5px;" th:each="message :${MessageCollection}">
         <div class="card" style="width: 100%; " >
-            <img src="" class="card-img-top" th:if="${message.imageUrl} != null"/>
+            <img th:src="${message.imageUrl}" class="card-img-top" th:if="${message.imageUrl} != null"/>
             <div class="card-body">
-                <div class="card-title">
-                    <b>[[${message.user.name.first}]] [[${message.user.name.middle}]] [[${message.user.name.last}]]</b>
-                </div><div class="card-text">
-                <p>@[[${message.user.username}]] on [[${message.postedDate}]]</p>
+                <div class="card-title" >
+                    <b>[[${message.user.name.first}]] [[${message.user.name.middle}]] [[${message.user.name.last}]]</b><br />
+                    <span style="font-size: small"><b>@</b><a th:href="@{/message/view/{username}(username=${message.user.username})}">[[${message.user.username}]]</a> at [[${message.postedDate}]]<br /></span>
+                    <hr />
+                </div>
+                <div class="card-text">
+                    <div th:if="${message.imageUrl} != null">
+                        <a style="font-size: smaller" th:href="${message.imageUrl}">[[${message.imageUrl}]]</a><br />
+                    </div>
                     [[${message.content}]]
                 </div>
             </div>
         </div>
     </div>
-    <p><span th:replace="f/base::message_new"></span></p>
+    <p><span><a class="btn btn-primary" th:href="@{/message/view}">View All Messages</a></span></p>
 </div>
+<script>
+    var prevScrollpos = window.pageYOffset;
+    var navbar = document.getElementById("navbar");
+    var spacer = document.getElementById("spacer");
+
+    var navbarHeight = navbar.offsetHeight;
+
+    spacer.style.height = navbarHeight+"px";
+    window.onscroll = function() {
+        var currentScrollPos = window.pageYOffset;
+        if (prevScrollpos > currentScrollPos) {
+            navbar.style.top = "0";
+        } else {
+            navbar.style.top = "-"+navbarHeight+"px";
+        }
+        prevScrollpos = currentScrollPos;
+    }
+</script>
+
+
 </body>
 </html>

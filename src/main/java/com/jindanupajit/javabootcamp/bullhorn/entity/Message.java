@@ -3,6 +3,7 @@ package com.jindanupajit.javabootcamp.bullhorn.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 public class Message {
@@ -19,7 +20,7 @@ public class Message {
     @Column(length = 1024)
     private String imageUrl;
 
-    private Date postedDate;
+    private Timestamp postedDate;
 
 
     @ManyToOne(
@@ -32,14 +33,14 @@ public class Message {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Message(@Size(max = 1024) String content, String imageUrl, Date postedDate, User user) {
+    public Message(@Size(max = 1024) String content, String imageUrl, Timestamp postedDate, User user) {
         this.content = content;
         this.imageUrl = imageUrl;
         this.postedDate = postedDate;
         this.user = user;
     }
 
-    public Message(@Size(max = 1024) String content, Date postedDate, User user) {
+    public Message(@Size(max = 1024) String content, Timestamp postedDate, User user) {
         this(content, null, postedDate, user);
     }
 
@@ -62,11 +63,11 @@ public class Message {
         this.content = content;
     }
 
-    public Date getPostedDate() {
+    public Timestamp getPostedDate() {
         return postedDate;
     }
 
-    public void setPostedDate(Date postedDate) {
+    public void setPostedDate(Timestamp postedDate) {
         this.postedDate = postedDate;
     }
 

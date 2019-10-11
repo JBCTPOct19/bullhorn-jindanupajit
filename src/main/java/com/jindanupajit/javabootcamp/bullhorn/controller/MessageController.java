@@ -6,7 +6,6 @@ import com.jindanupajit.javabootcamp.bullhorn.entity.Message;
 import com.jindanupajit.javabootcamp.bullhorn.entity.PeopleName;
 import com.jindanupajit.javabootcamp.bullhorn.entity.User;
 import com.jindanupajit.javabootcamp.bullhorn.repository.MessageCrudRepository;
-import com.jindanupajit.javabootcamp.bullhorn.repository.UserCrudRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -17,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.IOException;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +38,7 @@ public class MessageController {
         model.addAttribute("message",
                 new Message(
                         "",
-                        (new Date((new java.util.Date()).getTime())),
+                        (new Timestamp((new java.util.Date()).getTime())),
                         // todo
                         getUserByUsername("jindanupajit")
                 )
@@ -60,6 +59,7 @@ public class MessageController {
                                 .asMap("resourcetype", "auto"));
                 message.setImageUrl(uploadResult.get("url").toString());
             } catch (IOException e) {
+                System.err.println("Cloud Upload Error: fallback!");
                 e.printStackTrace();
                 // fallback
                 message.setImageUrl(null);
@@ -68,7 +68,7 @@ public class MessageController {
         else {
             message.setImageUrl(null);
         }
-        message.setPostedDate(new Date((new java.util.Date()).getTime()));
+        message.setPostedDate(new Timestamp((new java.util.Date()).getTime()));
         message.setUser(getUserByUsername("jindanupajit"));
         messageCrudRepository.save(message);
         return "redirect:/message/view";
@@ -92,7 +92,7 @@ public class MessageController {
         if (username.isPresent()) {
             User user =   getUserByUsername(username.get());
             model.addAttribute("whom", user.getUsername());
-            model.addAttribute("MessageCollection", getMessageByUser(user));
+            model.addAttribute("MessageCollection", getMessageCollectionByUser(user));
         }
         else {
             model.addAttribute("whom", "all");
@@ -121,7 +121,7 @@ public class MessageController {
         return UserCollection.get(0);
     }
 
-    private List<Message> getMessageByUser(User user) {
+    private List<Message> getMessageCollectionByUser(User user) {
 
         return (List<Message>) manager.createQuery("select m from Message m where m.user = :user")
                 .setParameter("user", user)
